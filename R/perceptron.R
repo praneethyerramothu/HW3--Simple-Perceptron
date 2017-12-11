@@ -1,7 +1,7 @@
-#'Square a number
+#'Classify two classes using Perceptron
 #'works with 'iris' data set
 #'@param x A data set
-#'@return returns squared number
+#'@return returns classified objects 
 #'@export
 
 
@@ -9,10 +9,12 @@
 
 perceptron<-function(x){
   data<-x
-  library(rgl)
-  library(ggplot2)
-
-  Random.Unit <-function(data) {
+ 
+  
+  Classify <- function(x, weight) {
+    return(sign(x %*% weight))
+  }
+  DataC <-function(data) {
     irissubdf <- data[0:100, c(1, 3, 5)]
     n<-nrow(irissubdf)
     names(irissubdf) <- c("sepal", "petal", "species")
@@ -21,28 +23,26 @@ perceptron<-function(x){
     irissubdf<-irissubdf[,c(4,2,1)]
     names(irissubdf) <- c( "label","sepal", "petal")
     irissubdf
-    x0<-rep(1,n)
-    irissubdf<-cbind(x0 , irissubdf)
+    p<-rep(1,n)
+    irissubdf<-cbind(p , irissubdf)
     irissubdf<-irissubdf[,c(2,1,3,4)]
     return(as.matrix(irissubdf))
   }
 
-  Classify <- function(x, weights) {
-    return(sign(x %*% weights))
-  }
+  
 
-  Perceptron <- function(data, threshold) {
-    w <- c(-threshold, runif(ncol(data) - 2))
+  Perceptron <- function(data, Limit) {
+    w <- c(-Limit, runif(ncol(data) - 2))
     n <- nrow(data)
     label <- data[ , 1]
     obs <- data[ , 2:ncol(data)]
-    misclassfied <- TRUE
-    while (misclassfied) {
-      misclassfied <- FALSE
+    wrongClass <- TRUE
+    while (wrongClass) {
+      wrongClass <- FALSE
       for (i in 1:n) {
         if (label[i] * Classify(obs[i , ], w) <= 0) {
           w <- w + label[i] * obs[i , ]
-          misclassfied <- TRUE
+          wrongClass <- TRUE
         }
       }
     }
@@ -61,12 +61,12 @@ perceptron<-function(x){
 
   ## All good upto this point
 
-  pts <- Random.Unit(data)
-  THRESHOLD <-0.30
+  pts <- DataC(data)
+  Limit <-0.25
 
-  Plot2D1(pts, THRESHOLD, -1)
+  Plot2D1(pts, Limit, -1)
 
-  w <- Perceptron(pts, THRESHOLD)
+  w <- Perceptron(pts, Limit)
   Plot2D1(pts, -w[1]/w[3], -w[2]/ w[3])
 
 
