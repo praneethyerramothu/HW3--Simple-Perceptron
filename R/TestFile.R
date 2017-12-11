@@ -1,0 +1,3 @@
+library(Perceptron)
+perceptron(iris)
+
